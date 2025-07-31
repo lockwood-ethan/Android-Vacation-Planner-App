@@ -1,14 +1,16 @@
-package wgu.edu.vacationapplication;
+package wgu.edu.vacationapplication.UI;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+import wgu.edu.vacationapplication.R;
+
+public class ExcursionDetails extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_excursion_details);
     }
 }
