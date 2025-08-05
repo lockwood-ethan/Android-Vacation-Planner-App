@@ -11,10 +11,13 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import wgu.edu.vacationapplication.Database.Repository;
+import wgu.edu.vacationapplication.Entities.Excursion;
+import wgu.edu.vacationapplication.Entities.Vacation;
 import wgu.edu.vacationapplication.R;
 
 public class VacationList extends AppCompatActivity {
-
+    private Repository repository;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +42,17 @@ public class VacationList extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.mysample) {
-            Toast.makeText(VacationList.this,"put in sample data", Toast.LENGTH_LONG).show();
+            repository = new Repository(getApplication());
+            // Toast.makeText(VacationList.this,"put in sample data", Toast.LENGTH_LONG).show();
+            Vacation vacation = new Vacation(0, "Cabo San Lucas", 4000.00);
+            repository.insert(vacation);
+            vacation = new Vacation(0, "Bahamas", 2500.00);
+            repository.insert(vacation);
+            Excursion excursion = new Excursion(0, "Swim with Dolphins", 200.00, 1);
+            repository.insert(excursion);
+            excursion = new Excursion(0, "Romantic Dinner Date", 150.00, 1);
+            repository.insert(excursion);
+
             return true;
         }
         if (item.getItemId() == android.R.id.home) {
