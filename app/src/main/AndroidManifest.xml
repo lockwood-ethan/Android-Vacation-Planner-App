@@ -21,7 +21,7 @@
             android:name=".UI.VacationDetails"
             android:exported="false"
             android:label="Vacation Details and Excursion List"
-            android:parentActivityName=".UI.MainActivity" />
+            android:parentActivityName=".UI.VacationList" />
         <activity
             android:name=".UI.VacationList"
             android:exported="false"

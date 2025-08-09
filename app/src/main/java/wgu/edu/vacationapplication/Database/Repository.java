@@ -1,6 +1,7 @@
 package wgu.edu.vacationapplication.Database;
 
 import android.app.Application;
+import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -72,6 +73,18 @@ public class Repository {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<Excursion> getAllExcursions() {
+        databaseExecutor.execute(()->{
+            mAllExcursions = mExcursionDAO.getAllExcursions();
+        });
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return mAllExcursions;
     }
 
     public List<Excursion> getAssociatedExcursions(int vacationID) {
