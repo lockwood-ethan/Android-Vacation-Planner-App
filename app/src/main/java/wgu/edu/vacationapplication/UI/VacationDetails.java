@@ -1,9 +1,11 @@
 package wgu.edu.vacationapplication.UI;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.widget.EditText;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import wgu.edu.vacationapplication.Database.Repository;
@@ -46,6 +49,7 @@ public class VacationDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(VacationDetails.this, ExcursionDetails.class);
+                intent.putExtra("vacationID", vacationId);
                 startActivity(intent);
             }
         });
@@ -55,6 +59,16 @@ public class VacationDetails extends AppCompatActivity {
         recyclerView.setAdapter(excursionAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         excursionAdapter.setExcursions(repository.getAssociatedExcursions(vacationId));
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        List<Excursion> allExcursions = repository.getAssociatedExcursions(vacationId);
+        RecyclerView recyclerView = findViewById(R.id.excursionrecyclerview);
+        final ExcursionAdapter excursionAdapter = new ExcursionAdapter(this);
+        recyclerView.setAdapter(excursionAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        excursionAdapter.setExcursions(allExcursions);
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -83,8 +97,39 @@ public class VacationDetails extends AppCompatActivity {
                     repository.update(vacation);
                     this.finish();
                 } catch (Exception e) {
-                    Log.d("Save Issue", String.valueOf(e));
+                    Log.e("Problem Updating", String.valueOf(e));
                 }
+            }
+        }
+
+        if (item.getItemId() == R.id.vacationdelete) {
+            Vacation vacation;
+            vacation = new Vacation(vacationId, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()));
+            if (vacationId == -1) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(VacationDetails.this);
+                builder.setMessage("This vacation is not saved");
+                builder.setTitle("Cannot Delete");
+                builder.setCancelable(false);
+                builder.setPositiveButton("OK", (DialogInterface.OnClickListener) (dialog, which) -> {
+                    dialog.cancel();
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            }
+            else if (repository.getAssociatedExcursions(vacationId).size() > 0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(VacationDetails.this);
+                builder.setMessage("This vacation has associated excursions");
+                builder.setTitle("Cannot Delete");
+                builder.setCancelable(false);
+                builder.setPositiveButton("OK", (DialogInterface.OnClickListener) (dialog, which) -> {
+                    dialog.cancel();
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            }
+            else {
+                repository.delete(vacation);
+                this.finish();
             }
         }
 
