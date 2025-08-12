@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,11 +13,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Callable;
 
 import wgu.edu.vacationapplication.Database.Repository;
@@ -26,11 +35,18 @@ import wgu.edu.vacationapplication.R;
 
 public class VacationDetails extends AppCompatActivity {
     String name;
-    double price;
+    String lodging;
     int vacationId;
     EditText editName;
-    EditText editPrice;
+    EditText editLodging;
+    TextView editStartDate;
+    TextView editEndDate;
     Repository repository;
+
+    DatePickerDialog.OnDateSetListener startDate;
+    DatePickerDialog.OnDateSetListener endDate;
+    final Calendar myCalendarStart = Calendar.getInstance();
+    final Calendar myCalendarEnd = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +55,75 @@ public class VacationDetails extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.floatingActionButton2);
 
         editName = findViewById(R.id.titletext);
-        editPrice = findViewById(R.id.pricetext);
+        editLodging = findViewById(R.id.lodgingtext);
         vacationId = getIntent().getIntExtra("id", -1);
         name = getIntent().getStringExtra("name");
-        price = getIntent().getDoubleExtra("price", 0.0);
+        lodging = getIntent().getStringExtra("lodging");
         editName.setText(name);
-        editPrice.setText(Double.toString(price));
+        editLodging.setText(lodging);
+        editStartDate = findViewById(R.id.startDate);
+        editEndDate = findViewById(R.id.endDate);
+
+        String myFormat = "MM/dd/yy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        editStartDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO Auto-generated method stub
+                Date date;
+                //get value from other screen but I'm going to hard code it right now
+                String info = editStartDate.getText().toString();
+                if (info.equals("")) {
+                    info = "08/12/25";
+                }
+                try {
+                    myCalendarStart.setTime(sdf.parse(info));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                new DatePickerDialog(VacationDetails.this, startDate, myCalendarStart
+                        .get(Calendar.YEAR), myCalendarStart.get(Calendar.MONTH),
+                        myCalendarStart.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+        startDate = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                myCalendarStart.set(Calendar.YEAR, year);
+                myCalendarStart.set(Calendar.MONTH, month);
+                myCalendarStart.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabelStart();
+            }
+        };
+        editEndDate.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Date date;
+                String info = editEndDate.getText().toString();
+                if (info.equals("")) {
+                    info = "08/12/25";
+                }
+                try {
+                    myCalendarEnd.setTime(sdf.parse(info));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                new DatePickerDialog(VacationDetails.this, endDate, myCalendarEnd
+                        .get(Calendar.YEAR), myCalendarEnd.get(Calendar.MONTH),
+                        myCalendarEnd.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+        endDate = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                myCalendarEnd.set(Calendar.YEAR, year);
+                myCalendarEnd.set(Calendar.MONTH, month);
+                myCalendarEnd.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabelEnd();
+            }
+        };
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,6 +138,16 @@ public class VacationDetails extends AppCompatActivity {
         recyclerView.setAdapter(excursionAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         excursionAdapter.setExcursions(repository.getAssociatedExcursions(vacationId));
+    }
+    private void updateLabelStart() {
+        String myFormat = "MM/dd/yy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+        editStartDate.setText(sdf.format(myCalendarStart.getTime()));
+    }
+    private void updateLabelEnd() {
+        String myFormat = "MM/dd/yy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+        editEndDate.setText(sdf.format(myCalendarEnd.getTime()));
     }
     @Override
     protected void onResume() {
@@ -82,18 +171,18 @@ public class VacationDetails extends AppCompatActivity {
             if (vacationId == -1) {
                 if (repository.getmAllVacations().size() == 0) {
                     vacationId = 1;
-                    vacation = new Vacation(vacationId, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()));
+                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString());
                     repository.insert(vacation);
                     this.finish();
                 } else {
                     vacationId = repository.getmAllVacations().get(repository.getmAllVacations().size() - 1).getVacationID() + 1;
-                    vacation = new Vacation(vacationId, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()));
+                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString());
                     repository.insert(vacation);
                     this.finish();
                 }
             } else {
                 try {
-                    vacation = new Vacation(vacationId, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()));
+                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString());
                     repository.update(vacation);
                     this.finish();
                 } catch (Exception e) {
@@ -104,7 +193,7 @@ public class VacationDetails extends AppCompatActivity {
 
         if (item.getItemId() == R.id.vacationdelete) {
             Vacation vacation;
-            vacation = new Vacation(vacationId, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()));
+            vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString());
             if (vacationId == -1) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(VacationDetails.this);
                 builder.setMessage("This vacation is not saved");
