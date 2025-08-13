@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -71,8 +74,16 @@ public class VacationDetails extends AppCompatActivity {
         savedEndDate = getIntent().getStringExtra("endDate");
         editName.setText(name);
         editLodging.setText(lodging);
-        editStartDate.setText(savedStartDate);
-        editEndDate.setText(savedEndDate);
+        if (savedStartDate == null) {
+            editStartDate.setText("Enter Start Date");
+        } else {
+            editStartDate.setText(savedStartDate);
+        }
+        if (savedEndDate == null) {
+            editEndDate.setText("Enter End Date");
+        } else {
+            editEndDate.setText(savedEndDate);
+        }
 
 
         editStartDate.setOnClickListener(new View.OnClickListener() {
@@ -236,6 +247,59 @@ public class VacationDetails extends AppCompatActivity {
                 repository.delete(vacation);
                 this.finish();
             }
+        }
+
+        if (item.getItemId() == R.id.share) {
+            Vacation vacation;
+            vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString());
+            Intent sentIntent = new Intent();
+            sentIntent.setAction(Intent.ACTION_SEND);
+            sentIntent.putExtra(Intent.EXTRA_TEXT, "Vacation Name: " + vacation.getVacationName() + "\n"
+                    + "Vacation Lodging: " + vacation.getLodging() + "\n"
+                    + "Start Date: " + vacation.getStartDate() + "\n"
+                    + "End Date: " + vacation.getEndDate());
+            sentIntent.setType("text/plain");
+            Intent shareIntent = Intent.createChooser(sentIntent, null);
+            startActivity(shareIntent);
+            return true;
+        }
+
+        if (item.getItemId() == R.id.notifyStart) {
+            String startDate = editStartDate.getText().toString();
+            String myFormat = "MM/dd/yy";
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            Date myDate = null;
+            try {
+                myDate = sdf.parse(startDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Long trigger = myDate.getTime();
+            Intent intent = new Intent(VacationDetails.this, MyReceiver.class);
+            intent.putExtra("notifyStart", editName.getText().toString() + " is starting today!");
+            PendingIntent sender = PendingIntent.getBroadcast(VacationDetails.this, ++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, trigger, sender);
+            return true;
+        }
+
+        if (item.getItemId() == R.id.notifyEnd) {
+            String endDate = editEndDate.getText().toString();
+            String myFormat = "MM/dd/yy";
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            Date myDate = null;
+            try {
+                myDate = sdf.parse(endDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Long trigger = myDate.getTime();
+            Intent intent = new Intent(VacationDetails.this, MyReceiver.class);
+            intent.putExtra("notifyStart", editName.getText().toString() + " is ending today =(");
+            PendingIntent sender = PendingIntent.getBroadcast(VacationDetails.this, ++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, trigger, sender);
+            return true;
         }
 
         if (item.getItemId() == android.R.id.home) {
