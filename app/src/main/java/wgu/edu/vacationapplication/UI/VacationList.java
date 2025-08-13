@@ -13,6 +13,13 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 import wgu.edu.vacationapplication.Database.Repository;
@@ -22,6 +29,11 @@ import wgu.edu.vacationapplication.R;
 
 public class VacationList extends AppCompatActivity {
     private Repository repository;
+    LocalDate currentDate = LocalDate.now();
+    LocalDate endDate = LocalDate.now().plusWeeks(1);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy");
+    String stringCurrentDate = currentDate.format(formatter);
+    String stringEndDate = endDate.format(formatter);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,9 +77,9 @@ public class VacationList extends AppCompatActivity {
         if (item.getItemId() == R.id.mysample) {
             repository = new Repository(getApplication());
             // Toast.makeText(VacationList.this,"put in sample data", Toast.LENGTH_LONG).show();
-            Vacation vacation = new Vacation(0, "Cabo San Lucas", "AirBnB");
+            Vacation vacation = new Vacation(0, "Cabo San Lucas", "AirBnB", stringCurrentDate , stringEndDate);
             repository.insert(vacation);
-            vacation = new Vacation(0, "Bahamas", "Ritz Carlton");
+            vacation = new Vacation(0, "Bahamas", "Ritz Carlton", stringCurrentDate, stringEndDate);
             repository.insert(vacation);
             Excursion excursion = new Excursion(0, "Swim with Dolphins", 200.00, 1);
             repository.insert(excursion);

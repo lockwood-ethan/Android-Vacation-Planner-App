@@ -11,7 +11,7 @@ import wgu.edu.vacationapplication.DAO.VacationDAO;
 import wgu.edu.vacationapplication.Entities.Excursion;
 import wgu.edu.vacationapplication.Entities.Vacation;
 
-@Database(entities = {Vacation.class, Excursion.class}, version = 2, exportSchema = false)
+@Database(entities = {Vacation.class, Excursion.class}, version = 4, exportSchema = false)
 public abstract class VacationDatabaseBuilder extends RoomDatabase {
     public abstract ExcursionDAO excursionDAO();
     public abstract VacationDAO vacationDAO();

@@ -21,6 +21,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,16 +38,18 @@ public class VacationDetails extends AppCompatActivity {
     String name;
     String lodging;
     int vacationId;
+    String savedStartDate;
+    String savedEndDate;
     EditText editName;
     EditText editLodging;
     TextView editStartDate;
     TextView editEndDate;
     Repository repository;
-
     DatePickerDialog.OnDateSetListener startDate;
     DatePickerDialog.OnDateSetListener endDate;
     final Calendar myCalendarStart = Calendar.getInstance();
     final Calendar myCalendarEnd = Calendar.getInstance();
+    LocalDate currentDate = LocalDate.now();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,28 +57,31 @@ public class VacationDetails extends AppCompatActivity {
         setContentView(R.layout.activity_vacation_details);
         FloatingActionButton fab = findViewById(R.id.floatingActionButton2);
 
+        String myFormat = "MM/dd/yy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
         editName = findViewById(R.id.titletext);
         editLodging = findViewById(R.id.lodgingtext);
+        editStartDate = findViewById(R.id.startDate);
+        editEndDate = findViewById(R.id.endDate);
         vacationId = getIntent().getIntExtra("id", -1);
         name = getIntent().getStringExtra("name");
         lodging = getIntent().getStringExtra("lodging");
+        savedStartDate = getIntent().getStringExtra("startDate");
+        savedEndDate = getIntent().getStringExtra("endDate");
         editName.setText(name);
         editLodging.setText(lodging);
-        editStartDate = findViewById(R.id.startDate);
-        editEndDate = findViewById(R.id.endDate);
+        editStartDate.setText(savedStartDate);
+        editEndDate.setText(savedEndDate);
 
-        String myFormat = "MM/dd/yy";
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         editStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO Auto-generated method stub
                 Date date;
-                //get value from other screen but I'm going to hard code it right now
                 String info = editStartDate.getText().toString();
                 if (info.equals("")) {
-                    info = "08/12/25";
+                    info = currentDate.toString();
                 }
                 try {
                     myCalendarStart.setTime(sdf.parse(info));
@@ -97,13 +103,12 @@ public class VacationDetails extends AppCompatActivity {
             }
         };
         editEndDate.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 Date date;
                 String info = editEndDate.getText().toString();
                 if (info.equals("")) {
-                    info = "08/12/25";
+                    info = currentDate.toString();
                 }
                 try {
                     myCalendarEnd.setTime(sdf.parse(info));
@@ -122,6 +127,7 @@ public class VacationDetails extends AppCompatActivity {
                 myCalendarEnd.set(Calendar.MONTH, month);
                 myCalendarEnd.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 updateLabelEnd();
+
             }
         };
         fab.setOnClickListener(new View.OnClickListener() {
@@ -168,21 +174,31 @@ public class VacationDetails extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.vacationsave) {
             Vacation vacation;
-            if (vacationId == -1) {
+            if (myCalendarStart.after(myCalendarEnd) || myCalendarEnd.before(myCalendarStart)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(VacationDetails.this);
+                builder.setMessage("Start Date cannot be after End Date");
+                builder.setTitle("Invalid Date");
+                builder.setCancelable(false);
+                builder.setPositiveButton("OK", (DialogInterface.OnClickListener) (dialog, which) -> {
+                    dialog.cancel();
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            } else if (vacationId == -1) {
                 if (repository.getmAllVacations().size() == 0) {
                     vacationId = 1;
-                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString());
+                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString());
                     repository.insert(vacation);
                     this.finish();
                 } else {
                     vacationId = repository.getmAllVacations().get(repository.getmAllVacations().size() - 1).getVacationID() + 1;
-                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString());
+                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString());
                     repository.insert(vacation);
                     this.finish();
                 }
             } else {
                 try {
-                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString());
+                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString());
                     repository.update(vacation);
                     this.finish();
                 } catch (Exception e) {
@@ -193,7 +209,7 @@ public class VacationDetails extends AppCompatActivity {
 
         if (item.getItemId() == R.id.vacationdelete) {
             Vacation vacation;
-            vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString());
+            vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString());
             if (vacationId == -1) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(VacationDetails.this);
                 builder.setMessage("This vacation is not saved");
