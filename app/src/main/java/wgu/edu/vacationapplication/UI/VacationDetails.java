@@ -146,6 +146,8 @@ public class VacationDetails extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(VacationDetails.this, ExcursionDetails.class);
                 intent.putExtra("vacationID", vacationId);
+                intent.putExtra("vacationStartDate", editStartDate.getText().toString());
+                intent.putExtra("vacationEndDate", editEndDate.getText().toString());
                 startActivity(intent);
             }
         });

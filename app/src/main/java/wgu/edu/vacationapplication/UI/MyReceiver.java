@@ -18,8 +18,6 @@ public class MyReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // TODO: This method is called when the BroadcastReceiver is receiving
-        // an Intent broadcast.
         Toast.makeText(context, intent.getStringExtra("notifyStart"), Toast.LENGTH_LONG).show();
         createNotificationChannel(context, channel_id);
         Notification n = new NotificationCompat.Builder(context, channel_id)
