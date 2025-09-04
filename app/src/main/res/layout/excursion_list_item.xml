@@ -12,7 +12,7 @@
         android:layout_margin="5dp"
         android:textAlignment="center"
         android:paddingTop="7dp"
-        android:background="#FF004C69"
+        android:background="?attr/colorButtonNormal"
         android:text="TextView"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
