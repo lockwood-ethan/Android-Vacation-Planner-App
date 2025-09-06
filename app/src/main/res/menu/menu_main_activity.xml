@@ -6,4 +6,7 @@
         app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         android:title="@string/search_title" />
+
+    <item android:title="Generate Report"
+        android:id="@+id/generatereport" />
 </menu>
