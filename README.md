@@ -47,8 +47,3 @@ Edit excursion details, set notifications, delete excursions, and vacations:
 
 The targeted android API that the APK is targeted at is Tiramisu or API 33, but the APK is compatible with 
 android API 26 through 36.
-
-``Link to the git repository``
-
-https://gitlab.com/wgu-gitlab-environment/student-repos/elock10/d308-mobile-application-development-android.git
-=======
