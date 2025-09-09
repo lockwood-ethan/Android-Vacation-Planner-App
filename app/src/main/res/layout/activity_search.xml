@@ -9,6 +9,7 @@
         android:id="@+id/searchResultText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Search Results:"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

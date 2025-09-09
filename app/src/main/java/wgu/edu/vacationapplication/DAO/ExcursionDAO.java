@@ -27,4 +27,10 @@ public interface ExcursionDAO {
 
     @Query("SELECT * FROM EXCURSIONS WHERE vacationID=:vaca ORDER BY excursionID ASC")
     List<Excursion> getAssociatedExcursions(int vaca);
+
+    @Query("UPDATE VACATIONS SET excursionCount = excursionCount + 1 WHERE vacationID=:vaca")
+    void increaseExcursionCount(int vaca);
+
+    @Query("UPDATE VACATIONS SET excursionCount = excursionCount - 1 WHERE vacationID=:vaca")
+    void decreaseExcursionCount(int vaca);
 }

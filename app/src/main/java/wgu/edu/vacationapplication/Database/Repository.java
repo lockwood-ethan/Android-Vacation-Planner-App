@@ -132,4 +132,26 @@ public class Repository {
             e.printStackTrace();
         }
     }
+
+    public void increaseExcursionCount(int vacationID) {
+        databaseExecutor.execute(()->{
+            mExcursionDAO.increaseExcursionCount(vacationID);
+        });
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void decreaseExcursionCount(int vacationID) {
+        databaseExecutor.execute(()->{
+            mExcursionDAO.decreaseExcursionCount(vacationID);
+        });
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

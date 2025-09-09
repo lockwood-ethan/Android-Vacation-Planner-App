@@ -33,6 +33,7 @@ import java.util.Locale;
 
 import wgu.edu.vacationapplication.Database.Repository;
 import wgu.edu.vacationapplication.Entities.Excursion;
+import wgu.edu.vacationapplication.Entities.Vacation;
 import wgu.edu.vacationapplication.R;
 
 public class ExcursionDetails extends AppCompatActivity {
@@ -157,11 +158,13 @@ public class ExcursionDetails extends AppCompatActivity {
                     excursionID = 1;
                     excursion = new Excursion(excursionID, editName.getText().toString(), editDate.getText().toString(), vacationId, vacationStartDate, vacationEndDate);
                     repository.insert(excursion);
+                    repository.increaseExcursionCount(excursion.getVacationID());
                     this.finish();
                 } else {
                     excursionID = repository.getAllExcursions().get(repository.getAllExcursions().size() - 1).getExcursionID() + 1;
                     excursion = new Excursion(excursionID, editName.getText().toString(), editDate.getText().toString(), vacationId, vacationStartDate, vacationEndDate);
                     repository.insert(excursion);
+                    repository.increaseExcursionCount(excursion.getVacationID());
                     this.finish();
                 }
             } else {
@@ -191,6 +194,7 @@ public class ExcursionDetails extends AppCompatActivity {
             }
             else {
                 repository.delete(excursion);
+                repository.decreaseExcursionCount(excursion.getVacationID());
                 this.finish();
             }
         }

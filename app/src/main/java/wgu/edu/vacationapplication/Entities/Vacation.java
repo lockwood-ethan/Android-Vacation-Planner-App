@@ -14,13 +14,15 @@ public class Vacation {
     private String lodging;
     private String startDate;
     private String endDate;
+    private int excursionCount;
 
-    public Vacation(int vacationID, String vacationName, String lodging, String startDate, String endDate) {
+    public Vacation(int vacationID, String vacationName, String lodging, String startDate, String endDate, int excursionCount) {
         this.vacationID = vacationID;
         this.vacationName = vacationName;
         this.lodging = lodging;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.excursionCount = excursionCount;
     }
 
     public int getVacationID() {
@@ -61,5 +63,11 @@ public class Vacation {
 
     public void setEndDate(String endDate) {
         this.endDate = endDate;
+    }
+    public int getExcursionCount() {
+        return excursionCount;
+    }
+    public void setExcursionCount(int excursionCount) {
+        this.excursionCount = excursionCount;
     }
 }

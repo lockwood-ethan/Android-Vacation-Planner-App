@@ -46,6 +46,7 @@ public class VacationDetails extends AppCompatActivity {
     int vacationId;
     String savedStartDate;
     String savedEndDate;
+    int excursionCount;
     EditText editName;
     EditText editLodging;
     TextView editStartDate;
@@ -75,6 +76,8 @@ public class VacationDetails extends AppCompatActivity {
         lodging = getIntent().getStringExtra("lodging");
         savedStartDate = getIntent().getStringExtra("startDate");
         savedEndDate = getIntent().getStringExtra("endDate");
+        excursionCount = getIntent().getIntExtra("excursionCount", 0);
+
         editName.setText(name);
         editLodging.setText(lodging);
         if (savedStartDate == null) {
@@ -207,18 +210,18 @@ public class VacationDetails extends AppCompatActivity {
             } else if (vacationId == -1) {
                 if (repository.getmAllVacations().size() == 0) {
                     vacationId = 1;
-                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString());
+                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString(), excursionCount);
                     repository.insert(vacation);
                     this.finish();
                 } else {
                     vacationId = repository.getmAllVacations().get(repository.getmAllVacations().size() - 1).getVacationID() + 1;
-                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString());
+                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString(), excursionCount);
                     repository.insert(vacation);
                     this.finish();
                 }
             } else {
                 try {
-                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString());
+                    vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString(), excursionCount);
                     repository.update(vacation);
                     this.finish();
                 } catch (Exception e) {
@@ -229,7 +232,7 @@ public class VacationDetails extends AppCompatActivity {
 
         if (item.getItemId() == R.id.vacationdelete) {
             Vacation vacation;
-            vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString());
+            vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString(), excursionCount);
             if (vacationId == -1) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(VacationDetails.this);
                 builder.setMessage("This vacation is not saved");
@@ -260,13 +263,14 @@ public class VacationDetails extends AppCompatActivity {
 
         if (item.getItemId() == R.id.share) {
             Vacation vacation;
-            vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString());
+            vacation = new Vacation(vacationId, editName.getText().toString(), editLodging.getText().toString(), editStartDate.getText().toString(), editEndDate.getText().toString(), excursionCount);
             Intent sentIntent = new Intent();
             sentIntent.setAction(Intent.ACTION_SEND);
             sentIntent.putExtra(Intent.EXTRA_TEXT, "Vacation Name: " + vacation.getVacationName() + "\n"
                     + "Vacation Lodging: " + vacation.getLodging() + "\n"
                     + "Start Date: " + vacation.getStartDate() + "\n"
-                    + "End Date: " + vacation.getEndDate());
+                    + "End Date: " + vacation.getEndDate() + "\n"
+                    + "Planned Excursions: " + vacation.getExcursionCount());
             sentIntent.setType("text/plain");
             Intent shareIntent = Intent.createChooser(sentIntent, null);
             startActivity(shareIntent);
